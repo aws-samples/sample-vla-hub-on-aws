@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package gr00t;
+
+// GR00T N1.6 원격 추론 서비스
+// 2026-04-12: ZMQ 방식 → gRPC 재설계 (NLB + mTLS 지원)
+service GR00TInference {
+  // 로봇 관절 액션 추론
+  rpc Infer (InferRequest) returns (InferResponse);
+  // 서버 / 모델 로드 상태 확인
+  rpc Health (HealthRequest) returns (HealthResponse);
+}
+
+message InferRequest {
+  bytes  image_data       = 1;  // JPEG/PNG raw bytes (클라이언트가 인코딩하여 전송)
+  string instruction      = 2;  // 자연어 태스크 지시 (예: "pick up the cube")
+
+  // 로봇 관절 상태 (optional — 미입력 시 zero 패딩)
+  repeated float left_arm    = 3;  // 6-DOF: x,y,z,roll,pitch,yaw (LIBERO_PANDA EEF)
+  repeated float right_arm   = 4;  // 7-DOF
+  repeated float left_hand   = 5;  // 6-DOF
+  repeated float right_hand  = 6;  // 6-DOF
+  repeated float waist       = 7;  // 3-DOF
+  bytes          wrist_image_data = 8;  // wrist camera JPEG/PNG (optional)
+  repeated float left_gripper    = 9;  // 2-DOF: finger0_qpos, finger1_qpos (LIBERO_PANDA)
+}
+
+message InferResponse {
+  // key: 관절명 (예: "left_arm", "right_arm")
+  // value: float32 numpy array bytes (numpy.ndarray.tobytes() — little-endian)
+  map<string, bytes> action_chunks = 1;
+}
+
+message HealthRequest {}
+
+message HealthResponse {
+  bool healthy      = 1;  // 서버 구동 중
+  bool model_loaded = 2;  // GR00T 모델 로드 완료 여부
+}

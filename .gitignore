@@ -1,0 +1,25 @@
+# Ignore the `build/` directory in the package root.
+/build
+
+# CDK
+cdk.out/
+cdk.context.json
+
+# TypeScript build output
+*.js
+!jest.config.js
+*.d.ts
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Mac
+.DS_Store
+
+# DrawIO backups
+.*.drawio.bkp
+
+# Python bytecode
+__pycache__/
+*.pyc

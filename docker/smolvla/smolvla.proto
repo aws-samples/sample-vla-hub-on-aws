@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package smolvla;
+
+// SmolVLA (HuggingFace LeRobot, 450M) gRPC 서비스
+// Base: SmolVLM2-500M + Flow Matching action expert
+// HF: lerobot/smolvla_base
+service SmolVLAService {
+  // 로봇 관절 액션 추론 (action chunk 반환)
+  rpc Infer (InferRequest) returns (InferResponse);
+  // 서버 / 모델 로드 상태 확인
+  rpc Health (HealthRequest) returns (HealthResponse);
+}
+
+message InferRequest {
+  // 이미지: 두 카메라 뷰 (LeRobot 표준 키 매핑)
+  //   exterior_image → observation.images.image        (third-person view)
+  //   wrist_image    → observation.images.wrist_image  (eye-in-hand)
+  // JPEG/PNG raw bytes, 서버에서 224x224 RGB로 리사이즈
+  bytes  exterior_image = 1;
+  bytes  wrist_image    = 2;
+
+  // 자연어 태스크 지시 (예: "pick up the red cube")
+  string instruction    = 3;
+
+  // 로봇 상태 8-dim: eef_pos(3) + axis_angle(3) + gripper(2)
+  // LIBERO 규약 동일 — LeRobot libero_processor 출력과 호환
+  // optional: 미입력 시 zero 패딩
+  repeated float state  = 4;
+}
+
+message InferResponse {
+  // actions: float32 row-major bytes
+  // 복원: np.frombuffer(response.actions, dtype=np.float32).reshape(-1, action_dim)
+  // shape_info로 chunk_length와 action_dim 확인 가능
+  bytes actions = 1;
+
+  // {"chunk_length": N, "action_dim": D}
+  map<string, int32> shape_info = 2;
+}
+
+message HealthRequest {}
+
+message HealthResponse {
+  bool healthy      = 1;  // 서버 구동 중
+  bool model_loaded = 2;  // SmolVLA 모델 로드 완료 여부
+}

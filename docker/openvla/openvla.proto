@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package openvla;
+
+// OpenVLA-7B gRPC 서비스
+// Phase 1 probing: GetAttention RPC
+// Phase 2 이후: Infer RPC (success_score 필드 추가 예정)
+service OpenVLAService {
+  // Phase 1 전용: attention map 추출
+  rpc GetAttention (AttentionRequest) returns (AttentionResponse);
+  // 서버 / 모델 로드 상태 확인
+  rpc Health (HealthRequest) returns (HealthResponse);
+}
+
+// GetAttention request
+// frames: JPEG/PNG bytes 리스트 (trajectory 시퀀스)
+// instruction: 자연어 태스크 지시
+// layer_indices: 추출할 layer 인덱스 (비어있으면 전체)
+// head_indices: 추출할 head 인덱스 (비어있으면 전체)
+message AttentionRequest {
+  repeated bytes  frames        = 1;  // JPEG/PNG bytes, len = T (frame count)
+  string          instruction   = 2;  // 자연어 지시 (예: "pick up the red cube")
+  repeated int32  layer_indices = 3;  // empty = all layers
+  repeated int32  head_indices  = 4;  // empty = all heads
+}
+
+// GetAttention response
+// attention_maps: key = "L{layer_idx}_H{head_idx}", value = float32 bytes
+//   각 map shape: (T, N) — T frames, N instruction tokens
+//   numpy 복원: np.frombuffer(v, dtype=np.float32).reshape(T, N)
+// shape_info: {"T": T, "N": N, "num_layers": L, "num_heads": H}
+message AttentionResponse {
+  map<string, bytes> attention_maps = 1;  // key: "L{l}_H{h}"
+  map<string, int32> shape_info     = 2;  // T, N, num_layers, num_heads
+}
+
+message HealthRequest {}
+
+message HealthResponse {
+  bool healthy      = 1;
+  bool model_loaded = 2;
+}

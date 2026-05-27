@@ -1,0 +1,54 @@
+{
+  "models": [
+    {
+      "id": "gr00t",
+      "version": "N1.6",
+      "grpc_port": 50050,
+      "capacity": {
+        "type": "spot",
+        "min": 0,
+        "max": 2
+      }
+    },
+    {
+      "id": "gr00t",
+      "version": "N1.7",
+      "grpc_port": 50051,
+      "capacity": {
+        "type": "spot",
+        "min": 0,
+        "max": 2
+      }
+    },
+    {
+      "id": "pi",
+      "version": "0.5",
+      "grpc_port": 50052,
+      "capacity": {
+        "type": "spot",
+        "min": 0,
+        "max": 2
+      }
+    },
+    {
+      "id": "openvla",
+      "version": "7b",
+      "grpc_port": 50053,
+      "capacity": {
+        "type": "spot",
+        "min": 0,
+        "max": 2
+      }
+    },
+    {
+      "id": "smolvla",
+      "version": "450M",
+      "grpc_port": 50054,
+      "capacity": {
+        "type": "spot",
+        "min": 0,
+        "max": 2
+      }
+    }
+  ]
+}

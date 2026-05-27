@@ -1,0 +1,206 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+  <diagram name="페이지-1" id="pLFRSU2VzRNB3u9wA5Cm">
+    <mxGraphModel dx="1357" dy="1087" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;" value="VLA Hub on AWS — System Architecture" vertex="1">
+          <mxGeometry height="40" width="800" x="177" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="aws_cloud" parent="1" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_aws_cloud_alt;strokeColor=#232F3E;fillColor=#FFFFFF;verticalLabelPosition=top;verticalAlign=bottom;align=left;html=1;fontSize=12;fontStyle=1;" value="AWS Cloud" vertex="1">
+          <mxGeometry height="940" width="1410" x="20" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="vpc" parent="1" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_vpc;strokeColor=#8C4FFF;fillColor=#F5F0FF;verticalLabelPosition=top;verticalAlign=bottom;align=left;html=1;fontSize=11;fontStyle=1;" value="VPC" vertex="1">
+          <mxGeometry height="870" width="1124" x="40" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="private_subnet" parent="1" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_private_subnet;strokeColor=#F5A623;fillColor=#FFFBF0;verticalLabelPosition=top;verticalAlign=bottom;align=left;html=1;fontSize=10;" value="Private Subnet with Egress (AZ-a, AZ-b)" vertex="1">
+          <mxGeometry height="770" width="780" x="350" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="nlb" parent="1" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=none;fillColor=#E7157B;labelBackgroundColor=#ffffff;align=center;html=1;fontSize=10;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.network_load_balancer;" value="" vertex="1">
+          <mxGeometry height="60" width="60" x="550" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="nlb_label" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;fontSize=9;" value="&lt;div&gt;Network Load Balancer&lt;/div&gt;&lt;div&gt;(Internal, TCP)&lt;/div&gt;Port 50051 (GR00T gRPC)&lt;br&gt;Port 50052 (π0.5 gRPC)" vertex="1">
+          <mxGeometry height="35" width="160" x="500" y="265" as="geometry" />
+        </mxCell>
+        <mxCell id="ecs_cluster" parent="1" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_ecs_cluster;strokeColor=#E7157B;fillColor=#FDF0F7;verticalLabelPosition=top;verticalAlign=bottom;align=left;html=1;fontSize=10;" value="ECS Cluster (EC2 Launch Type)" vertex="1">
+          <mxGeometry height="580" width="740" x="370" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="groot_service_box" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;fontStyle=1;verticalAlign=top;" value="ECS Service: GR00T N1.6" vertex="1">
+          <mxGeometry height="260" width="320" x="390" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="groot_ec2" parent="1" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=none;fillColor=#ED7100;labelBackgroundColor=#ffffff;align=center;html=1;fontSize=9;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.ec2;" value="" vertex="1">
+          <mxGeometry height="50" width="50" x="410" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="groot_ec2_label" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontSize=9;" value="EC2 (GPU):&amp;nbsp;g5.2xlarge / g6.2xlarge&lt;br&gt;Root: 50GB gp3 (enc)&lt;br&gt;Docker: 200GB gp3 (enc)&lt;br&gt;ASG: 1 task / instance" vertex="1">
+          <mxGeometry height="50" width="110" x="470" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="groot_container" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;align=left;" value="Container: gr00t-realtime&#xa;ECR Image: gr00t-realtime:N1.6-latest&#xa;gRPC port: 50051&#xa;Health: HTTP 8080&#xa;RAM: 20480 MiB" vertex="1">
+          <mxGeometry height="120" width="290" x="400" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="pi_service_box" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;fontStyle=1;verticalAlign=top;" value="ECS Service: π0.5" vertex="1">
+          <mxGeometry height="260" width="320" x="750" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="pi_ec2" parent="1" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=none;fillColor=#ED7100;labelBackgroundColor=#ffffff;align=center;html=1;fontSize=9;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.ec2;" value="" vertex="1">
+          <mxGeometry height="50" width="50" x="770" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="pi_ec2_label" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontSize=9;" value="EC2 (GPU):&amp;nbsp;g5.xlarge / g6.xlarge&lt;br&gt;Root: 50GB gp3 (enc)&lt;br&gt;Docker: 200GB gp3 (enc)&lt;br&gt;ASG: 1 task/instance" vertex="1">
+          <mxGeometry height="50" width="120" x="910" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="pi_container" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;align=left;" value="Container: vla-pi-realtime&#xa;ECR Image: vla-pi-realtime:0.5-latest&#xa;gRPC port: 50052&#xa;Health: HTTP 8080&#xa;RAM: 12288 MiB" vertex="1">
+          <mxGeometry height="120" width="290" x="760" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="codebuild_box" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;fontStyle=1;verticalAlign=top;" value="Build Phase (VlaBuildStack)" vertex="1">
+          <mxGeometry height="130" width="700" x="390" y="760" as="geometry" />
+        </mxCell>
+        <mxCell id="codebuild_groot" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;align=left;" value="CodeBuild: gr00t-realtime-build&lt;br&gt;Role: BuildRole&lt;br&gt;Pulls: Secrets Manager (hf-token) + S3&lt;br&gt;Pushes: ECR gr00t-realtime:N1.6-latest&lt;div&gt;Code:&amp;nbsp;https://github.com/NVIDIA/Isaac-GR00T.git&amp;nbsp;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="75" width="320" x="400" y="800" as="geometry" />
+        </mxCell>
+        <mxCell id="codebuild_pi" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;align=left;" value="CodeBuild: vla-pi-realtime-build&lt;br&gt;Role: BuildRole&lt;br&gt;Pulls: S3 (no secret needed)&lt;br&gt;Pushes: ECR vla-pi-realtime:0.5-latest&lt;div&gt;Code:&amp;nbsp;https://github.com/Physical-Intelligence/openpi.git&lt;/div&gt;" vertex="1">
+          <mxGeometry height="75" width="320" x="750" y="800" as="geometry" />
+        </mxCell>
+        <mxCell id="ecr_groot" parent="1" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=none;fillColor=#E7157B;labelBackgroundColor=#ffffff;align=center;html=1;fontSize=9;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.ecr;" value="&lt;div&gt;&lt;span style=&quot;background-color: light-dark(rgb(255, 255, 255), rgb(18, 18, 18)); color: light-dark(rgb(35, 47, 62), rgb(189, 199, 212));&quot;&gt;ECR&lt;/span&gt;&lt;/div&gt;gr00t-realtime" vertex="1">
+          <mxGeometry height="50" width="50" x="720" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="ecr_pi" parent="1" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=none;fillColor=#E7157B;labelBackgroundColor=#ffffff;align=center;html=1;fontSize=9;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.ecr;" value="ECR&#xa;vla-pi-realtime" vertex="1">
+          <mxGeometry height="50" width="50" x="850" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="secrets" parent="1" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=none;fillColor=#DD344C;labelBackgroundColor=#ffffff;align=center;html=1;fontSize=9;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.secrets_manager;" value="Secrets Manager&#xa;gr00t/hf-token" vertex="1">
+          <mxGeometry height="50" width="50" x="465" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="grpc_client" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" value="gRPC Client&lt;br&gt;(VPC-resident, no auth)&lt;div&gt;ex.&amp;nbsp;https://github.com/aws-samples/sample-nvidia-gr00t-simulation-on-aws&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="150" x="50" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="developer" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" value="Developer / Operator&#xa;(IAM + CDK Deploy)" vertex="1">
+          <mxGeometry height="60" width="150" x="60" y="795" as="geometry" />
+        </mxCell>
+        <mxCell id="ssm" parent="1" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=none;fillColor=#E7157B;labelBackgroundColor=#ffffff;align=center;html=1;fontSize=9;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.systems_manager;" value="SSM Session Manager&#xa;(ECS Exec)" vertex="1">
+          <mxGeometry height="50" width="50" x="220" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="sg_note" parent="1" style="text;html=1;strokeColor=#FF0000;fillColor=#FFE6CC;align=left;verticalAlign=middle;fontSize=9;rounded=1;" value="SG: TCP 50051,50052,8080 inbound from VPC CIDR&#xa;Outbound: TCP 443 + UDP/TCP 53 to 0.0.0.0/0" vertex="1">
+          <mxGeometry height="40" width="420" x="370" y="930" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="grpc_client" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#b85450;strokeWidth=2;fontColor=#b85450;fontSize=9;" target="nlb" value="TCP 50051/50052&#xa;(no auth)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="nlb" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#6c8ebf;strokeWidth=1;fontSize=9;entryX=0.999;entryY=0.282;entryDx=0;entryDy=0;entryPerimeter=0;" target="groot_container" value="TCP 50051">
+          <mxGeometry relative="1" x="0.3535" y="13" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="700" y="230" />
+              <mxPoint x="700" y="504" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="nlb" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#82b366;strokeWidth=1;fontSize=9;" target="pi_container" value="TCP 50052">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1060" y="230" />
+              <mxPoint x="1060" y="530" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="nlb" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#d6b656;strokeWidth=1;dashed=1;fontSize=9;" target="groot_ec2" value="HTTP 8080&#xa;health check">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="nlb" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#d6b656;strokeWidth=1;dashed=1;fontSize=9;" target="pi_ec2" value="HTTP 8080&#xa;health check">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="private_subnet" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#8C4FFF;strokeWidth=1;dashed=1;fontSize=9;exitX=0;exitY=0.25;exitDx=0;exitDy=0;" target="nat_gw" value="HTTPS egress&#xa;(ECR, CW Logs)">
+          <mxGeometry relative="1" x="-0.0743" y="25" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="groot_container" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#E7157B;strokeWidth=1;dashed=1;fontSize=9;exitX=0.75;exitY=1;exitDx=0;exitDy=0;" target="cw_logs" value="logs">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="pi_container" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#E7157B;strokeWidth=1;dashed=1;fontSize=9;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" target="cw_logs" value="logs">
+          <mxGeometry relative="1" x="0.312" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="codebuild_groot" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#b85450;strokeWidth=1;fontSize=9;" target="ecr_groot" value="push image">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="codebuild_pi" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#82b366;strokeWidth=1;fontSize=9;" target="ecr_pi" value="push image">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="codebuild_groot" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#DD344C;strokeWidth=1;dashed=1;fontSize=9;" target="secrets" value="read hf-token">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="groot_container" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#6c8ebf;strokeWidth=1;dashed=1;fontSize=9;exitX=1;exitY=0.75;exitDx=0;exitDy=0;" target="ecr_groot" value="pull image">
+          <mxGeometry relative="1" x="0.1724" y="-5" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e13" edge="1" parent="1" source="pi_container" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#82b366;strokeWidth=1;dashed=1;fontSize=9;" target="ecr_pi" value="pull image">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" edge="1" parent="1" source="developer" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#6c8ebf;strokeWidth=1;fontSize=9;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="codebuild_box" value="cdk deploy / trigger build">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" edge="1" parent="1" source="developer" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#6c8ebf;strokeWidth=1;dashed=1;fontSize=9;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" target="ssm" value="ECS Exec">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" edge="1" parent="1" source="ssm" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#6c8ebf;strokeWidth=1;dashed=1;fontSize=9;" target="groot_container">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f2NnIuElIj8UWsFF_cPC-2" connectable="0" parent="1" style="group" value="" vertex="1">
+          <mxGeometry height="290" width="310" x="1180" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="iam_box" parent="f2NnIuElIj8UWsFF_cPC-2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;fontStyle=1;verticalAlign=top;fontColor=#333333;arcSize=7;" value="IAM Roles" vertex="1">
+          <mxGeometry height="290" width="230" as="geometry" />
+        </mxCell>
+        <mxCell id="iam_exec" parent="f2NnIuElIj8UWsFF_cPC-2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;align=left;" value="ExecutionRole&#xa;Trust: ecs-tasks.amazonaws.com&#xa;• ECR: GetAuthorizationToken, BatchGetImage&#xa;• CloudWatch Logs: PutLogEvents" vertex="1">
+          <mxGeometry height="70" width="210" x="10" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="iam_task" parent="f2NnIuElIj8UWsFF_cPC-2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;align=left;" value="TaskRole&#xa;Trust: ecs-tasks.amazonaws.com&#xa;• SSM: CreateControlChannel, OpenDataChannel&#xa;  (ECS Exec via Session Manager)&#xa;• Resource: * (overly broad)" vertex="1">
+          <mxGeometry height="80" width="210" x="10" y="115" as="geometry" />
+        </mxCell>
+        <mxCell id="iam_build" parent="f2NnIuElIj8UWsFF_cPC-2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;align=left;" value="BuildRole&#xa;Trust: codebuild.amazonaws.com&#xa;• ECR: PullPush (scoped)&#xa;• S3: Read (CDK bootstrap)&#xa;• Secrets Manager: Read gr00t/hf-token" vertex="1">
+          <mxGeometry height="70" width="210" x="10" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="f2NnIuElIj8UWsFF_cPC-3" connectable="0" parent="1" style="group" value="" vertex="1">
+          <mxGeometry height="100" width="260" x="40" y="322" as="geometry" />
+        </mxCell>
+        <mxCell id="public_subnet" parent="f2NnIuElIj8UWsFF_cPC-3" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_public_subnet;strokeColor=#007A00;fillColor=#F0FFF0;verticalLabelPosition=top;verticalAlign=bottom;align=left;html=1;fontSize=10;" value="Public Subnet (AZ-a, AZ-b)" vertex="1">
+          <mxGeometry height="100" width="240" x="10" as="geometry" />
+        </mxCell>
+        <mxCell id="e17" edge="1" parent="f2NnIuElIj8UWsFF_cPC-3" source="nat_gw" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#8C4FFF;strokeWidth=1;dashed=1;fontSize=9;" target="igw" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="D09V9Xa0miaDzWYNnjyX-1" connectable="0" parent="f2NnIuElIj8UWsFF_cPC-3" style="group" value="" vertex="1">
+          <mxGeometry height="85" width="100" x="160" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="nat_gw" parent="D09V9Xa0miaDzWYNnjyX-1" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=none;fillColor=#8C4FFF;labelBackgroundColor=#ffffff;align=center;html=1;fontSize=10;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.nat_gateway;" value="" vertex="1">
+          <mxGeometry height="60" width="60" x="20" as="geometry" />
+        </mxCell>
+        <mxCell id="nat_gw_label" parent="D09V9Xa0miaDzWYNnjyX-1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;fontSize=9;" value="NAT Gateway" vertex="1">
+          <mxGeometry height="20" width="100" y="65" as="geometry" />
+        </mxCell>
+        <mxCell id="f2NnIuElIj8UWsFF_cPC-1" connectable="0" parent="f2NnIuElIj8UWsFF_cPC-3" style="group" value="" vertex="1">
+          <mxGeometry height="85" width="100" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="igw" parent="f2NnIuElIj8UWsFF_cPC-1" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=none;fillColor=#8C4FFF;labelBackgroundColor=#ffffff;align=center;html=1;fontSize=10;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.internet_gateway;" value="" vertex="1">
+          <mxGeometry height="60" width="60" x="20" as="geometry" />
+        </mxCell>
+        <mxCell id="igw_label" parent="f2NnIuElIj8UWsFF_cPC-1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;fontSize=9;" value="Internet Gateway" vertex="1">
+          <mxGeometry height="20" width="100" y="65" as="geometry" />
+        </mxCell>
+        <mxCell id="f2NnIuElIj8UWsFF_cPC-8" connectable="0" parent="1" style="group" value="" vertex="1">
+          <mxGeometry height="66" width="100" x="610" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="cw_logs" parent="f2NnIuElIj8UWsFF_cPC-8" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=none;fillColor=#E7157B;labelBackgroundColor=#ffffff;align=center;html=1;fontSize=9;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cloudwatch;" value="" vertex="1">
+          <mxGeometry height="50" width="50" x="25" as="geometry" />
+        </mxCell>
+        <mxCell id="cw_label" parent="f2NnIuElIj8UWsFF_cPC-8" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=9;" value="&lt;span&gt;CloudWatch Logs&lt;/span&gt;&lt;div&gt;/ecs/vla-hub/*&lt;/div&gt;&lt;div&gt;Retention: 1 week&lt;/div&gt;" vertex="1">
+          <mxGeometry height="20" width="100" y="46" as="geometry" />
+        </mxCell>
+        <mxCell id="f2NnIuElIj8UWsFF_cPC-10" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;fontSize=9;" value="NAT Gateway" vertex="1">
+          <mxGeometry height="20" width="100" x="240" y="610" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
