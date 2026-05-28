@@ -1,28 +1,16 @@
 # vla-hub
 
-> **⚠️ Non-production sample — no customer data, no production support**
->
-> This repository is an AWS Solutions Architecture sample for demonstrating VLA
-> (Vision-Language-Action) realtime inference on AWS. It is **not** intended for
-> production deployment.
->
-> - **Exposure**: gRPC endpoints are bound to an **internal NLB** (not internet-facing).
->   Clients must reside in the same VPC. No public ingress.
-> - **Data**: The sample processes **no customer data**. Model weights are
->   downloaded from HuggingFace **at container runtime** (not baked into images)
->   using a short-lived HuggingFace token stored in AWS Secrets Manager.
-> - **Support**: Provided as-is for reference and PoC use only. No SLA, no
->   backward compatibility guarantees, no production hardening (e.g., no WAF,
->   no auth layer in front of gRPC, single-AZ task placement).
-> - **Operators** are expected to review the architecture against their own
->   security, compliance, and availability requirements before any
->   customer-facing or production use.
-
 VLA (Vision-Language-Action) model hub for realtime inference on AWS ECS (EC2 GPU).
 
-Consolidates multiple OSS VLA policies into a single CDK project.
-Each model deploys independently with its own VPC and internal NLB — clients select the
-endpoint for the model they need.
+Five OSS VLA policies — **GR00T N1.6**, **GR00T N1.7**, **π0.5**, **OpenVLA-7B**,
+**SmolVLA-450M** — packaged as independent gRPC endpoints in a single CDK project.
+Pick the model that fits your robot, deploy in minutes, swap models without
+re-architecting clients. Each stack ships its own VPC, internal NLB, ECS cluster,
+ASG, and ECR repo.
+
+Adding a sixth model = one entry in `vla-hub.json` + a `docker/<model>/` context
++ matching stacks. The `AzSelectorConstruct` probes EC2 GPU capacity at deploy
+time and pins the ASG to a confirmed AZ — no manual capacity hunting.
 
 ## Model Selection Policy
 
@@ -307,3 +295,35 @@ NLB operates at L4 (TCP passthrough) — TLS is terminated inside the ECS Task
 container, enabling E2E mTLS. ALB terminates TLS at the load balancer layer,
 breaking the mTLS chain. NLB also handles long-lived gRPC streaming
 connections without HTTP-layer timeouts.
+
+---
+
+## Production Considerations
+
+This repository is a sample for demonstration and PoC use. Before adapting it
+for production or customer-facing workloads, review the following — none are
+hard blockers, but each is a deliberate scoping choice in the sample:
+
+- **Exposure**: gRPC endpoints are bound to an **internal NLB** (not
+  internet-facing). Clients must reside in the same VPC. For external clients,
+  add VPC peering, Transit Gateway, or PrivateLink — do not flip the NLB to
+  internet-facing without an auth layer in front.
+- **Auth**: There is **no auth layer in front of gRPC**. mTLS is supported at
+  the protocol level (NLB is L4 passthrough, TLS terminates in the task), but
+  certificate provisioning and client identity are out of scope here. Add
+  before exposing beyond the trusted VPC.
+- **Availability**: Each ECS service runs **single-AZ** by design (the
+  `AzSelectorConstruct` pins the ASG to one confirmed-capacity AZ). For HA,
+  switch to multi-AZ ASG with capacity rebalancing, or run two stacks in
+  different AZs behind a regional endpoint.
+- **Data**: The sample processes **no customer data**. Model weights are
+  downloaded from HuggingFace **at container runtime** (not baked into images)
+  using a short-lived HuggingFace token stored in AWS Secrets Manager. For
+  air-gapped or offline deployments, mirror weights to an internal ECR or S3
+  artifact store and bake them into the image.
+- **Support**: Provided as-is. No SLA, no backward compatibility guarantee
+  across model versions or CDK revisions. Pin a tag and treat upgrades as
+  PoC-grade migrations.
+
+Operators are expected to evaluate the architecture against their own security,
+compliance, and availability requirements before any customer-facing use.
