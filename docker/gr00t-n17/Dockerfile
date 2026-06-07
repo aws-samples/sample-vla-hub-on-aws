@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # pytorch:25.03-py3 — CUDA 12.8, PyTorch 2.7
 # N1.7: Cosmos-Reason2-2B (qwen3_backbone) 백본 — flash-attn 불필요
-FROM public.ecr.aws/nvidia/pytorch:25.03-py3
+FROM nvcr.io/nvidia/pytorch:25.03-py3
 
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 ENV DEBIAN_FRONTEND=noninteractive

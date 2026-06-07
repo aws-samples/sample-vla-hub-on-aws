@@ -46,9 +46,16 @@ const DEFAULT_INSTANCE_TYPES: Record<ModelId, string[]> = {
     'g5.2xlarge',  // capacity 부족 시
     'g6.2xlarge',  // 최후 수단
   ],
+  lap: [
+    // LAP-3B (JAX): FlashAttention 불필요. ~12-16 GB VRAM → xlarge(24 GB) 충분.
+    'g6.xlarge',   // L4 × 1, 24 GB VRAM — preferred (paper RTX4090 ~25Hz 대비 충분)
+    'g5.xlarge',   // A10G × 1, 24 GB VRAM — g6 대안
+    'g6.2xlarge',  // L4 × 1 — capacity 부족 시
+    'g5.2xlarge',  // A10G × 1 — 최후 수단
+  ],
 };
 
-export type ModelId = 'gr00t' | 'pi' | 'openvla' | 'smolvla';
+export type ModelId = 'gr00t' | 'pi' | 'openvla' | 'smolvla' | 'lap';
 
 export interface VlaEcsStackProps extends cdk.StackProps {
   modelId: ModelId;
@@ -434,6 +441,17 @@ const MODEL_CONFIGS: Record<ModelId, ModelConfig> = {
       DEVICE:      'cuda:0',
     },
     useNvidiaRuntime: false,
+  },
+  lap: {
+    clusterName: 'vla-lap-realtime',
+    capacityProviderName: 'lap-gpu-cp',
+    // LAP-3B: JAX 런타임 ~12-16 GB; g6/g5.xlarge (~15.8 GB available)에 12 GB reservation
+    memoryReservationMiB: 12288,
+    containerEnv: {
+      MODEL_CONFIG:         'lap_libero',
+      MODEL_CHECKPOINT_DIR: '/opt/lap-cache/checkpoints/lap_libero',
+    },
+    useNvidiaRuntime: true,  // JAX: ECS가 ecs.capability.nvidia-gpu 등록하도록 default-runtime=nvidia 필요
   },
 };
 

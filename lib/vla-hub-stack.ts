@@ -51,6 +51,14 @@ const DEFAULT_INSTANCE_TYPES: Record<string, string[]> = {
     'g5.2xlarge',  // A10G × 1 — capacity 부족 시
     'g6.2xlarge',  // L4 × 1 — 최후 수단
   ],
+  lap: [
+    // LAP-3B (JAX, PaliGemma-3B + Flow Matching): FlashAttention 불필요.
+    // ~12-16 GB VRAM → xlarge(24 GB) 충분 (paper RTX4090 ~25Hz).
+    'g6.xlarge',   // L4 × 1, 24 GB VRAM — preferred
+    'g5.xlarge',   // A10G × 1, 24 GB VRAM — g6 대안
+    'g6.2xlarge',  // L4 × 1 — capacity 부족 시
+    'g5.2xlarge',  // A10G × 1 — 최후 수단
+  ],
 };
 
 /** Model-level static config (version-independent). */
@@ -87,6 +95,10 @@ const MODEL_STATIC_CONFIGS: Record<string, ModelStaticConfig> = {
   smolvla: {
     ecrRepoName: 'vla-smolvla-realtime',
     useNvidiaRuntime: false,
+  },
+  lap: {
+    ecrRepoName: 'vla-lap-realtime',
+    useNvidiaRuntime: true,  // JAX (pi와 동일): daemon.json default-runtime=nvidia 필요
   },
 };
 
@@ -206,11 +218,30 @@ const SMOLVLA_VERSION_CONFIGS: Record<string, ModelVersionConfig> = {
   },
 };
 
+// LAP: github.com/lihzha/lap — PaliGemma-3B + Flow Matching action expert, JAX (openpi 기반).
+// 가중치(체크포인트 ~12.4 GB)는 Docker 이미지에 bake-in (public HF repo, 토큰 불필요).
+// 토크나이저(gs://big_vision/paligemma)도 빌드 시 OPENPI_DATA_HOME 캐시에 bake-in.
+const LAP_VERSION_CONFIGS: Record<string, ModelVersionConfig> = {
+  '3B': {
+    clusterName: 'vla-lap-realtime-3b',
+    capacityProviderName: 'lap-gpu-cp-3b',
+    // LAP-3B: JAX 런타임 ~12-16 GB; g6/g5.xlarge (~15.8 GB available)에 12 GB reservation
+    memoryReservationMiB: 12288,
+    containerEnv: {
+      MODEL_CONFIG:         'lap_libero',
+      MODEL_CHECKPOINT_DIR: '/opt/lap-cache/checkpoints/lap_libero',
+      // openpi maybe_download 캐시 — 빌드 시 토크나이저 bake-in한 경로와 동일해야 캐시 히트
+      OPENPI_DATA_HOME:     '/opt/openpi-cache',
+    },
+  },
+};
+
 const MODEL_VERSION_CONFIGS: Record<string, Record<string, ModelVersionConfig>> = {
   gr00t: GR00T_VERSION_CONFIGS,
   pi: PI_VERSION_CONFIGS,
   openvla: OPENVLA_VERSION_CONFIGS,
   smolvla: SMOLVLA_VERSION_CONFIGS,
+  lap: LAP_VERSION_CONFIGS,
 };
 
 function resolveVersionConfig(modelId: string, version: string): ModelVersionConfig {

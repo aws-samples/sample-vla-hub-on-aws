@@ -59,6 +59,15 @@ const MODEL_BUILD_CONFIGS: Record<ModelId, ModelBuildConfig> = {
     imageName: 'vla-smolvla-realtime',
     // SmolVLA 450M bake-in (~1 GB) — MEDIUM 충분
   },
+  lap: {
+    ecrRepoName: 'vla-lap-realtime',
+    codeBuildProjectName: 'vla-lap-realtime-build',
+    dockerContextDir: '../docker/lap',
+    imageName: 'vla-lap-realtime',
+    // LAP-3B 체크포인트 bake-in (~12.4 GB) — public HF repo, 토큰 불필요.
+    // openvla(~14 GB)와 동일하게 LARGE compute로 레이어 push 가속.
+    computeType: codebuild.ComputeType.LARGE,
+  },
 };
 
 export class VlaBuildStack extends cdk.Stack {

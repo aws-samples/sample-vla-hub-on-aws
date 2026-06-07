@@ -5,7 +5,7 @@
 #   - 모델: HuggingFace (PyTorch) → GCS public bucket (JAX/orbax)
 #   - 프레임워크: Isaac-GR00T → openpi (JAX + flax)
 #   - HF 토큰: 필요 없음 (GCS public bucket)
-FROM public.ecr.aws/nvidia/cuda:12.3.2-cudnn9-devel-ubuntu22.04
+FROM nvcr.io/nvidia/cuda:12.3.2-cudnn9-devel-ubuntu22.04
 
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 ENV DEBIAN_FRONTEND=noninteractive

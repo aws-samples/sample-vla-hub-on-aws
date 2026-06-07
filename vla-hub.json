@@ -49,6 +49,16 @@
         "min": 0,
         "max": 2
       }
+    },
+    {
+      "id": "lap",
+      "version": "3B",
+      "grpc_port": 50055,
+      "capacity": {
+        "type": "spot",
+        "min": 0,
+        "max": 2
+      }
     }
   ]
 }

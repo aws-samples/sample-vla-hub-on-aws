@@ -2,13 +2,13 @@
 
 VLA (Vision-Language-Action) model hub for realtime inference on AWS ECS (EC2 GPU).
 
-Five OSS VLA policies — **GR00T N1.6**, **GR00T N1.7**, **π0.5**, **OpenVLA-7B**,
-**SmolVLA-450M** — packaged as independent gRPC endpoints in a single CDK project.
-Pick the model that fits your robot, deploy in minutes, swap models without
-re-architecting clients. Each stack ships its own VPC, internal NLB, ECS cluster,
-ASG, and ECR repo.
+Six OSS VLA policies — **GR00T N1.6**, **GR00T N1.7**, **π0.5**, **OpenVLA-7B**,
+**SmolVLA-450M**, **LAP-3B** — packaged as independent gRPC endpoints in a single
+CDK project. Pick the model that fits your robot, deploy in minutes, swap models
+without re-architecting clients. Each stack ships its own VPC, internal NLB, ECS
+cluster, ASG, and ECR repo.
 
-Adding a sixth model = one entry in `vla-hub.json` + a `docker/<model>/` context
+Adding a seventh model = one entry in `vla-hub.json` + a `docker/<model>/` context
 + matching stacks. The `AzSelectorConstruct` probes EC2 GPU capacity at deploy
 time and pins the ASG to a confirmed AZ — no manual capacity hunting.
 
@@ -39,6 +39,7 @@ The policy is therefore:
 | **π0.5** | Apache-2.0 | Mobile robots + static arms + web data (~400h+) | Robots within co-training distribution | Sim+Real | Action Expert + LoRA(VLM) ($100s, days) | ~6 Hz | JAX | Mobile manipulation; in-distribution robots |
 | **OpenVLA-7B** | MIT | OXE 970K (Bridge / Franka centric) | Bridge, Franka centric | Sim+Real (limited) | Effectively retrain ($1000s) | ~6 Hz on RTX 4090 | PyTorch | Broadest community baseline; LoRA fine-tune |
 | **SmolVLA-450M** | Apache-2.0 | LeRobot community data | Lightweight robots | Sim+Real (limited) | Full-FT lightweight | Relatively fast | PyTorch | Edge / small robots; fast iteration |
+| **LAP-3B** | Apache-2.0 | Language-Action Pre-Training (zero-shot cross-embodiment) | Cross-embodiment (zero-shot intent) | Sim+Real | Fine-tune per embodiment | ~25 Hz on RTX 4090 | JAX | Most generalist baseline; cross-embodiment transfer |
 
 > **Note**: Zero-shot feasibility depends on how close the customer robot is to
 > the model's pretraining distribution. The table reflects embodiments that are
@@ -52,7 +53,8 @@ The policy is therefore:
 | New customer robot, fast PoC | GR00T N1.7 (MLP fine-tune) | GR00T N1.6 |
 | Precision assembly / loco-manipulation demo | GR00T N1.7 | GR00T N1.6 |
 | Mobile manipulation (navigation + manipulation) | π0.5 | — |
-| Cross-embodiment comparison demo | GR00T MLP vs π0.5 co-train vs OpenVLA full-FT in parallel | LAP-3B (experimental) |
+| Cross-embodiment comparison demo | GR00T MLP vs π0.5 co-train vs OpenVLA full-FT in parallel | LAP-3B |
+| Zero-shot cross-embodiment / most generalist baseline | LAP-3B | π0.5 |
 | Edge / small robot | SmolVLA-450M | OpenVLA quantized |
 | Most conservative baseline (community ground truth) | OpenVLA-7B | — |
 
@@ -61,8 +63,8 @@ The policy is therefore:
 ```
 Generalist  ─────────────────────────────────────  Specialist
        LAP-3B   π0.5    GR00T   SmolVLA   OpenVLA   Fast-WAM
-       (exp.)  (co-train) (MLP)             (Bridge/  (LIBERO/
-                                            Franka)   RoboTwin sim)
+              (co-train) (MLP)             (Bridge/  (LIBERO/
+                                           Franka)   RoboTwin sim)
                                                       ❌ outside hub
 ```
 
@@ -81,13 +83,14 @@ Robot / Sim Client
   ├─ gRPC (TCP:50051) → GR00T N1.7 NLB  → ECS Task (g6/g5 GPU) — GR00TInference
   ├─ gRPC (TCP:50052) → π0.5 NLB        → ECS Task (g5/g6 GPU) — PIInference
   ├─ gRPC (TCP:50053) → OpenVLA NLB     → ECS Task (g6/g5 GPU) — OpenVLAInference
-  └─ gRPC (TCP:50054) → SmolVLA NLB     → ECS Task (g6/g5 GPU) — SmolVLAInference
+  ├─ gRPC (TCP:50054) → SmolVLA NLB     → ECS Task (g6/g5 GPU) — SmolVLAInference
+  └─ gRPC (TCP:50055) → LAP-3B NLB      → ECS Task (g6/g5 GPU) — LAPInference
 ```
 
 Each stack is isolated:
 - Independent VPC, NLB, ECS Cluster, ASG, ECR repo
 - Internal NLB (not internet-facing) — gRPC clients must reside in the same VPC
-- gRPC inference port: model-specific (50050–50054), one port per model
+- gRPC inference port: model-specific (50050–50055), one port per model
 - Port 8080: HTTP health server (NLB health check target)
 
 ## Stacks
@@ -105,6 +108,7 @@ Current model entries (see `vla-hub.json`):
 | π     | 0.5  | 50052 | `PiBuildStack` | `PiEcsStack` |
 | OpenVLA | 7b | 50053 | `OpenvlaBuildStack` | `OpenvlaEcsStack` |
 | SmolVLA | 450M | 50054 | `Smolvla450mBuildStack` | `Smolvla450mEcsStack` |
+| LAP | 3B | 50055 | `Lap3BBuildStack` | (in `VlaHubStack`) |
 
 ## Quick Start
 
@@ -135,6 +139,10 @@ cdk deploy OpenvlaBuildStack
 
 # SmolVLA-450M: HuggingFace public model
 cdk deploy Smolvla450mBuildStack
+
+# LAP-3B: HuggingFace public model (checkpoint ~12.4 GB baked in at build; PaliGemma
+# tokenizer from gs://big_vision pre-baked too). No token needed.
+cdk deploy Lap3BBuildStack
 ```
 
 After CodeBuild completes, note the ECR image URIs from each stack's outputs.
@@ -161,6 +169,10 @@ cdk deploy OpenvlaEcsStack \
 # SmolVLA-450M
 cdk deploy Smolvla450mEcsStack \
   -c smolvla450mEcrImageUri=<account>.dkr.ecr.<region>.amazonaws.com/smolvla-450m-realtime:latest
+
+# LAP-3B (served from VlaHubStack — override the lap image URI via context)
+cdk deploy VlaHubStack \
+  -c lapEcrImageUri=<account>.dkr.ecr.<region>.amazonaws.com/vla-lap-realtime:3B-latest
 ```
 
 ### Optional CDK context overrides
@@ -192,6 +204,7 @@ the per-model schema appropriate to that model's input/output conventions.
 | π0.5 | `docker/pi/pi.proto` | `PIInference` | 50052 |
 | OpenVLA-7B | `docker/openvla/openvla.proto` | `OpenVLAInference` | 50053 |
 | SmolVLA-450M | `docker/smolvla/smolvla.proto` | `SmolVLAInference` | 50054 |
+| LAP-3B | `docker/lap/lap.proto` | `LAPInference` | 50055 |
 
 Common shape for `Infer`:
 
@@ -213,9 +226,10 @@ confirmed AZ.
 | π0.5 | g5.2xlarge → g5.xlarge → g6.2xlarge → g6.xlarge |
 | OpenVLA-7B | g6.2xlarge → g5.2xlarge → g6.xlarge → g5.xlarge |
 | SmolVLA-450M | g6.xlarge → g5.xlarge → g6.2xlarge → g5.2xlarge |
+| LAP-3B | g6.xlarge → g5.xlarge → g6.2xlarge → g5.2xlarge |
 
-GR00T (and OpenVLA's FlashAttention path) require Ampere GPU (SM80+). π0.5 uses
-JAX and does not require FlashAttention.
+GR00T (and OpenVLA's FlashAttention path) require Ampere GPU (SM80+). π0.5 and
+LAP-3B use JAX and do not require FlashAttention.
 
 ## Docker Contexts
 
@@ -225,7 +239,8 @@ docker/
 ├── gr00t-n17/   # GR00T N1.7 container (PyTorch + Isaac Lab gRPC server)
 ├── pi/          # π0.5 container (JAX + pi0.5 gRPC server)
 ├── openvla/     # OpenVLA-7B container (PyTorch + HuggingFace gRPC server)
-└── smolvla/     # SmolVLA-450M container (PyTorch + LeRobot gRPC server)
+├── smolvla/     # SmolVLA-450M container (PyTorch + LeRobot gRPC server)
+└── lap/         # LAP-3B container (JAX + openpi/lap gRPC server)
 ```
 
 Each context is packaged as an S3 Asset and passed to CodeBuild. When

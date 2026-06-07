@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 # pytorch:25.03-py3 — CUDA 12.8, PyTorch 2.7
 # N1.6: Eagle2-2B backbone — flash-attn required (Ampere+ GPU)
-FROM public.ecr.aws/nvidia/pytorch:25.03-py3
+FROM nvcr.io/nvidia/pytorch:25.03-py3
 
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 ENV DEBIAN_FRONTEND=noninteractive
